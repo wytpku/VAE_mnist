@@ -11,10 +11,10 @@ class Encoder(nn.Module):
         self.fc_logvar = nn.Linear(hidden_dim, latent_dim)
 
     def forward(self, x: torch.Tensor):
-        h = F.relu(self.fc1(x))
+        h = F.relu(self.fc1(x)) # h.shape = (B, hidden_dim)
         mu = self.fc_mu(h)
         logvar = self.fc_logvar(h)
-        return mu, logvar
+        return mu, logvar # (B, latent_dim)
     
 class Decoder(nn.Module):
     # 输入隐变量z，输出重建图像的 Bernoulli参数
@@ -42,7 +42,7 @@ class VAE(nn.Module):
     
     def forward(self, x: torch.Tensor):
         mu, logvar = self.encoder(x)
-        z = self.reparameterize(mu, logvar)
+        z = self.reparameterize(mu, logvar) # z.shape = (B, latent_dim)
         x_recon = self.decoder(z)
         return x_recon, mu, logvar
     
@@ -60,4 +60,4 @@ def vae_loss(x_recon: torch.Tensor, x: torch.Tensor, mu: torch.Tensor, logvar: t
     recon_loss = F.binary_cross_entropy(x_recon, x, reduction = "sum") # 和kl_loss也是求和相匹配
     kl_loss = -0.5 * torch.sum(1 + logvar - logvar.exp() - mu.pow(2))
     total_loss = kl_loss + recon_loss
-    return total_loss, recon_loss, kl_loss
+    return total_loss, recon_loss, kl_loss # 均为0维tensor

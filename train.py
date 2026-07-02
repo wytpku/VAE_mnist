@@ -26,6 +26,7 @@ def train():
         total_loss_sum, recon_loss_sum, kl_loss_sum, n_samples = 0.0, 0.0, 0.0, 0
 
         for batch_idx, (x, _) in enumerate(train_loader): # train_loader中有图像数据和标签，VAE是无监督学习，所以将标签舍弃
+            # x 的形状：（B, 1, 28, 28）
             x = x.view(x.size(0), -1).to(DEVICE) 
 
             optimizer.zero_grad()
