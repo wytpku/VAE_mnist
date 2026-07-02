@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# conda / virtual environment
+VAE/
+vae/
+.env/
+.venv/
+__pycache__/
+*.pyc
+
