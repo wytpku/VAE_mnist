@@ -36,7 +36,7 @@ def train():
     os.makedirs(args.report_dir, exist_ok=True)
     # 加上exist_ok=True参数，避免文件夹已存在时报错
 
-    train_loader = get_dataloader()
+    train_loader = get_dataloader(args.data_dir, args.batch_size)
     model = VAE(input_dim = 784, hidden_dim = 400, latent_dim = args.latent_dim).to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), lr = args.lr)
 
@@ -49,7 +49,7 @@ def train():
         writer.writerow(["epoch", "total_loss", "recon_loss", "kl_loss"])
 
     model.train()
-    for epoch in range(1, args.epoch + 1):
+    for epoch in range(1, args.epochs + 1):
         total_loss_sum, recon_loss_sum, kl_loss_sum, n_samples = 0.0, 0.0, 0.0, 0
 
         for batch_idx, (x, _) in enumerate(train_loader): # train_loader中有图像数据和标签，VAE是无监督学习，所以将标签舍弃
