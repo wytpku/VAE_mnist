@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
-from VAE import VAE, vae_loss
+from vae import VAE, vae_loss
 
 DEVICE = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 BATCH_SIZE = 128
@@ -11,7 +11,6 @@ EPOCHS = 1
 LR = 1e-3
 DATA_DIR = './data'
 
-# 没懂这个函数
 def get_dataloader() -> DataLoader:
     transform = transforms.ToTensor()
     train_set = datasets.MNIST(root = DATA_DIR, train = True, download = True, transform = transform)
@@ -26,8 +25,8 @@ def train():
     for epoch in range(1, EPOCHS + 1):
         total_loss_sum, recon_loss_sum, kl_loss_sum, n_samples = 0.0, 0.0, 0.0, 0
 
-        for batch_idx, (x, _) in enumerate(train_loader): # 没看懂
-            x = x.view(x.size(0), -1).to(DEVICE) # 没看懂
+        for batch_idx, (x, _) in enumerate(train_loader): # train_loader中有图像数据和标签，VAE是无监督学习，所以将标签舍弃
+            x = x.view(x.size(0), -1).to(DEVICE) 
 
             optimizer.zero_grad()
             x_recon, mu, logvar = model(x)
@@ -35,10 +34,10 @@ def train():
             loss.backward()
             optimizer.step()
 
-            total_loss_sum+=loss.item() # 没看懂
+            total_loss_sum+=loss.item() # 把tensor转成float
             recon_loss_sum+=recon_loss.item()
             kl_loss_sum+=kl_loss.item()
-            n_samples+=x.size(0) # 没看懂
+            n_samples+=x.size(0)
 
             if batch_idx % 100 == 0:
                 print(f"Epoch {epoch} [{batch_idx * len(x)} / {len(train_loader.dataset)}]")
