@@ -47,7 +47,7 @@ def train():
     model = VAE(input_dim = 784, hidden_dim = 400, latent_dim = args.latent_dim).to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters(), lr = args.lr)
 
-    csv_path = os.path.join(args.report_dir, "loss_log.csv") # 自动使用当前系统的正确分隔符
+    csv_path = os.path.join(report_dir, "loss_log.csv") # 自动使用当前系统的正确分隔符
     with open(csv_path, "w", newline="") as f:
         # "w"表示写入模式，若文件已存在则覆盖；newline=""避免在Windows上写入多余的空行
         # with ... as f 是上下文管理器语法，能够自动关闭文件（即使不是正常结束）
@@ -88,11 +88,12 @@ def train():
         with open(csv_path, "a", newline="") as f:
             # "a"表示追加模式
             writer = csv.writer(f)
-            writer.writerow([epoch, avg_total, avg_recon, avg_kl])
+            writer.writerow([epoch, args.beta, avg_total, avg_recon, avg_kl])
 
         ckpt_path = os.path.join(ckpt_dir, f"vae_epoch{epoch}.pt")
         torch.save({
             "epoch": epoch,
+            "beta": args.beta,
             "model_state dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "args": vars(args),
