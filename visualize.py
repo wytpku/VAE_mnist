@@ -34,7 +34,7 @@ def save_latent_interpolation_grid(model, data_loader, device, epoch, out_dir = 
     os.makedirs(out_dir, exisk_ok=True)
     model.eval()
 
-    x, _ = next(iter{data_loader})
+    x, _ = next(iter(data_loader))
     x_a = x[0:1].to(device) # (1, 1, 28, 28)
     x_b = x[1:2].to(device)
     x_a_flat = x_a.view(1, -1)
@@ -49,4 +49,29 @@ def save_latent_interpolation_grid(model, data_loader, device, epoch, out_dir = 
         imgs = model.decoder(z_interp).view(n_steps, 1, 28, 28)
 
     save_image(imgs, os.path.join(out_dir, f"interpolation_epoch{epoch}.png"), nrow = n_steps)
+    model.train()
+
+def save_latent_traversal_grid(model, device, epoch, out_dir = "report", 
+                               base_z = None, dims = None, n_steps = 7, traversal_range = 3.0):
+    # 检验维度是否真正“解耦”
+    os.makedirs(out_dir, exist_ok = True)
+    model.eval()
+    
+    if base_z is None:
+        base_z = torch.zeros(1, model.latent_dim, device=device)
+    if dims is None:
+        dims = range(model.latent_dim)
+
+    values = torch.linspace(-traversal_range, traversal_range, steps=n_steps, device=device)
+    rows = []
+
+    with torch.no_grad():
+        for dim in dims:
+            z_batch = base_z.repeat(n_steps, 1) # (n_steps, latent_dim) 先复制基准点
+            z_batch[:,dim] = values
+            imgs = model.decoder(z_batch).view(n_steps, 1, 28, 28)
+            rows.append(imgs)
+
+    grid = torch.cat(rows, dim=0) # (n_steps * n_steps, 1, 28, 28)
+    save_image(grid, os.path.join(out_dir, f"traversal_epoch{epoch}.png"), nrows = n_steps)
     model.train()

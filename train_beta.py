@@ -7,7 +7,7 @@ import csv
 import os
 
 from vae import VAE, vae_loss
-from visualize import save_reconstruction_grid, save_sample_grid
+from visualize import save_reconstruction_grid, save_sample_grid, save_latent_interpolation_grid, save_latent_traversal_grid
 
 DEVICE = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
 
@@ -98,8 +98,10 @@ def train():
             "args": vars(args),
         }, ckpt_path)
 
-        save_reconstruction_grid(model, train_loader, DEVICE, epoch, out_dir=args.report_dir)
-        save_sample_grid(model, DEVICE, epoch, num_samples=64, out_dir=args.report_dir)
+        save_reconstruction_grid(model, train_loader, DEVICE, epoch, out_dir=report_dir)
+        save_sample_grid(model, DEVICE, epoch, num_samples=64, out_dir=report_dir)
+        save_latent_interpolation_grid(model, train_loader, DEVICE, epoch, out_dir=report_dir)
+        save_latent_traversal_grid(model, DEVICE, epoch, out_dir=report_dir)
         
 if __name__ == '__main__':
     train()
