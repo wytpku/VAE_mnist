@@ -94,7 +94,7 @@ def train():
         torch.save({
             "epoch": epoch,
             "beta": args.beta,
-            "model_state dict": model.state_dict(),
+            "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "args": vars(args),
         }, ckpt_path)

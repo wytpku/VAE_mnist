@@ -43,7 +43,7 @@ def save_latent_interpolation_grid(model, data_loader, device, epoch, out_dir = 
     with torch.no_grad():
         mu_a, _ = model.encoder(x_a_flat)
         mu_b, _ = model.encoder(x_b_flat)
-        alphas = torch.linspace(0, 1, steps=n_steps, device=device).view(-1, 1)
+        alphas = torch.linspace(0, 1, steps=n_steps, device=device).view(-1, 1) # 返回一个一维张量
 
         z_interp = (1-alphas) * mu_a + alphas * mu_b # 利用广播机制 (n_steps, latent_dim)
         imgs = model.decoder(z_interp).view(n_steps, 1, 28, 28)
