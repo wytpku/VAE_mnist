@@ -31,7 +31,7 @@ def save_sample_grid(model, device, epoch, num_samples = 64, out_dir = "report")
 
 def save_latent_interpolation_grid(model, data_loader, device, epoch, out_dir = "report", n_steps = 10):
     # 检验隐空间连续
-    os.makedirs(out_dir, exisk_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     model.eval()
 
     x, _ = next(iter(data_loader))
@@ -73,5 +73,5 @@ def save_latent_traversal_grid(model, device, epoch, out_dir = "report",
             rows.append(imgs)
 
     grid = torch.cat(rows, dim=0) # (n_steps * n_steps, 1, 28, 28)
-    save_image(grid, os.path.join(out_dir, f"traversal_epoch{epoch}.png"), nrows = n_steps)
+    save_image(grid, os.path.join(out_dir, f"traversal_epoch{epoch}.png"), nrow = n_steps)
     model.train()
