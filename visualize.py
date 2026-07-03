@@ -28,3 +28,25 @@ def save_sample_grid(model, device, epoch, num_samples = 64, out_dir = "report")
     save_image(samples, os.path.join(out_dir, f"sample_epoch{epoch}.png"), nrow = 8)
 
     model.train()
+
+def save_latent_interpolation_grid(model, data_loader, device, epoch, out_dir = "report", n_steps = 10):
+    # 检验隐空间连续
+    os.makedirs(out_dir, exisk_ok=True)
+    model.eval()
+
+    x, _ = next(iter{data_loader})
+    x_a = x[0:1].to(device) # (1, 1, 28, 28)
+    x_b = x[1:2].to(device)
+    x_a_flat = x_a.view(1, -1)
+    x_b_flat = x_b.view(1, -1)
+
+    with torch.no_grad():
+        mu_a, _ = model.encoder(x_a_flat)
+        mu_b, _ = model.encoder(x_b_flat)
+        alphas = torch.linspace(0, 1, steps=n_steps, device=device).view(-1, 1)
+
+        z_interp = (1-alphas) * mu_a + alphas * mu_b # 利用广播机制 (n_steps, latent_dim)
+        imgs = model.decoder(z_interp).view(n_steps, 1, 28, 28)
+
+    save_image(imgs, os.path.join(out_dir, f"interpolation_epoch{epoch}.png"), nrow = n_steps)
+    model.train()
